@@ -1,38 +1,51 @@
-% variables_number = 4;
-% minterms = [0, 2, 4, 5, 6, 9, 10];
-% dont_cares = [7, 11, 12, 13, 14, 15];
-
 % https://github.com/int-main/Quine-McCluskey
-% [implicants, A] = getAllImplicants(4, [5, 9, 11, 12, 13, 16], [10 15]);
-% [implicants, A] = getAllImplicants(4, [5, 9, 10, 11, 12, 13, 15, 16], []);
+% synthesize(4, [5, 9, 11, 12, 13, 16], [10 15]);
+% synthesize(4, [5, 9, 10, 11, 12, 13, 15, 16], []);
 
 % https://personal.utdallas.edu/~dodge/EE2310/lec5.pdf
-% [implicants, A] = getAllImplicants(4, [5, 6, 13, 14], []);
-% [implicants, A] = getAllImplicants(4, [2, 6, 8, 10, 14, 16], []);
-% [implicants, A] = getAllImplicants(4, [1,2,3,5,7,11,13] + 1, []);
+% synthesize(4, [5, 6, 13, 14], []);
+% synthesize(4, [2, 6, 8, 10, 14, 16], []);
+% synthesize(4, [1,2,3,5,7,11,13] + 1, []);
 
 % https://www.gatevidyalay.com/k-maps-karnaugh-maps-solved-examples/
-[implicants, A] = getAllImplicants(4, [0, 2, 8, 10, 14] + 1, [5, 15] + 1);
+% synthesize(4, [0, 2, 8, 10, 14] + 1, [5, 15] + 1);
 
-% costo a porte
-C = 2 * ones(length(implicants), 1);
-b = ones(length(A(:,1)), 1);
+function synthesize(variables_number, minterms, dont_cares)
 
-% costo a diodi
-for i = 1:length(implicants)
-    C(i) = length(strfind(implicants(i, :),'1')) + length(strfind(implicants(i, :),'0')); 
-end
+    checkInputs(variables_number, minterms, dont_cares);
+    
+    not_zeros = merge_sorted(minterms, dont_cares);
 
-intcon = length(implicants);
+    [implicants, A] = getAllImplicants(variables_number, not_zeros);
 
-lb = zeros(length(implicants), 1);
-ub = ones(length(implicants), 1);
+    % remove dont_cares from A
+    for i = flip(dont_cares)
+        A(:,find(not_zeros == i)) = [];
+    end
 
-[x, v] = intlinprog(C,intcon,- A, - b,[],[],lb,ub)
+    % TODO fix this
+    A = A.';
 
-for i = 1:length(x)
-    if x(i)
-        implicants(i,:)
+    % costo a porte
+    C = 2 * ones(length(implicants), 1);
+    b = ones(length(A(:,1)), 1);
+    
+    % costo a diodi
+    for i = 1:length(implicants)
+        C(i) = length(strfind(implicants(i, :),'1')) + length(strfind(implicants(i, :),'0')); 
+    end
+    
+    intcon = length(implicants);
+    
+    lb = zeros(length(implicants), 1);
+    ub = ones(length(implicants), 1);
+    
+    [x, v] = intlinprog(C,intcon,- A, - b,[],[],lb,ub)
+    
+    for i = 1:length(x)
+        if x(i)
+            implicants(i,:)
+        end
     end
 end
 
@@ -64,12 +77,12 @@ function result_implicant = mergeImplicants(first_implicant, second_implicant)
     end
 end
 
-function checkInputs(minterms, dont_cares, variables_number)
-    
+function checkInputs(variables_number, minterms, dont_cares)
+
     combinations = 2 ^ variables_number;
 
     last = 0;
-    for i = minterms        
+    for i = minterms    
         if i > combinations
             error('minterm index out of bounds')
         end
@@ -158,47 +171,43 @@ function res = merge_sorted(array_1,array_2)
     end
 end
 
-function [implicants, A] = getAllImplicants(variables_number, minterms, dont_cares)    
+function [implicants, A] = getAllImplicants(variables_number, not_zeros)    
 
     % given
     %   variables_number := integer (ex: 4)
-    %   minterm := list of indexes (ex: [0, 2, 4, 6])
-    %   dont_cares := list of indexes (ex: [1, 3])
+    %   not_zeros := list of indexes (ex: [0, 2, 4, 6])
     % returns
     %   implicants := a list of all implicants
-    %   A := a matrix that indicates whether an implicant cover a minterm
-    
-    checkInputs(minterms, dont_cares, variables_number);
+    %   A := a matrix that indicates whether an implicant cover a not_zero
     
     implicants = [];
     A = [];
     
     % given the indexes the values are these
-    not_zeros = merge_sorted(minterms, dont_cares);
-
     not_zeros_value = not_zeros - 1;
-    binaries = dec2bin(not_zeros_value, variables_number);
 
+    % converts an int to a binary string with minimun length of variables_number
+    not_zeros_binaries = dec2bin(not_zeros_value, variables_number);
+
+    
     % first itation of QM
     groups = cell(variables_number + 1, 1);
 
     for i = 1:length(not_zeros)
         
         % get group index from number of ones
-        index = length(strfind(binaries(i,:),'1')) + 1;
-        % insert the minterm in the correct group
-        groups{index} = [groups{index}, string(binaries(i,:))];  
+        index = length(strfind(not_zeros_binaries(i,:),'1')) + 1;
+        
+        % insert the not_zero in the correct group
+        groups{index} = [groups{index}, string(not_zeros_binaries(i,:))];  
 
     end
 
     % check for length (get length of vector)
-    implicants = binaries;
-    A = zeros(length(not_zeros), length(implicants));
+    implicants = not_zeros_binaries;
 
-    
-    for i = 1:length(implicants)
-        A(i,i) = 1;
-    end
+    % at first the matrix is identical because every not_zero is cover by its cell 
+    A = eye(length(implicants));
     
     % while groups is not empty
     while 1
@@ -218,25 +227,25 @@ function [implicants, A] = getAllImplicants(variables_number, minterms, dont_car
                     result_implicant = mergeImplicants(implicant, to_check);
     
                     if result_implicant == "" ; continue ; end
+                    
+                    % if the result_implicant is already in redundant continue
+                    if any(strcmp(new_groups{i}, result_implicant)) ; continue ; end
 
-                    if ~any(strcmp(new_groups{i}, result_implicant))
-                        
-                        implicants = [implicants ; result_implicant{1}];
-                        
-                        % TODO find a way to get the index of an implicant in O(1)
-                        
-                        % insert a new line
-                        A(length(implicants),1) = 0;
-                        
-                        % get the two indexes
-                        idx_implicant = getIndex(implicants, implicant{1});
-                        idx_to_check = getIndex(implicants, to_check{1});
-                        
-                        % logical or for implicant cover
-                        A(length(implicants), :) = A(idx_implicant, :) | A(idx_to_check, :);
+                    implicants = [implicants ; result_implicant{1}];
+                    
+                    % TODO find a way to get the index of an implicant in O(1)
+                    
+                    % insert a new line
+                    A(length(implicants),1) = 0;
+                    
+                    % get the two indexes
+                    idx_implicant = getIndex(implicants, implicant{1});
+                    idx_to_check = getIndex(implicants, to_check{1});
+                    
+                    % logical or for implicant cover
+                    A(length(implicants), :) = A(idx_implicant, :) | A(idx_to_check, :);
 
-                        new_groups{i} = [new_groups{i}, result_implicant];
-                    end
+                    new_groups{i} = [new_groups{i}, result_implicant];
                 end
             end    
         end
@@ -256,13 +265,4 @@ function [implicants, A] = getAllImplicants(variables_number, minterms, dont_car
         groups = new_groups;
 
     end
-
-    % remove dont_cares from A
-    for i = flip(dont_cares)
-        A(:,find(not_zeros == i)) = [];
-    end
-
-    % TODO fix this
-    A = A.';
-
 end
