@@ -8,35 +8,45 @@
 % synthesize(4, [1,2,3,5,7,11,13] + 1, []);
 
 % https://www.gatevidyalay.com/k-maps-karnaugh-maps-solved-examples/
-% synthesize(4, [0, 2, 8, 10, 14] + 1, [5, 15] + 1);
+synthesize(4, [0, 2, 8, 10, 14] + 1, [5, 15] + 1);
 
 function synthesize(variables_number, minterms, dont_cares)
 
-    checkInputs(variables_number, minterms, dont_cares);
-    
-    not_zeros = merge_sorted(minterms, dont_cares);
+    % given
+    %   variables_number := integer (ex: 4)
+    %   minters := ordered list of indexes (ex: [0, 2, 4, 6])
+    %   dont_cares := ordered list of indexes (ex: [1, 3])
+    % shows
+    %   the minimal cost synthesis 
 
+    not_zeros = utils.merge_sorted(minterms, dont_cares);
+    
+    checkInputs(variables_number, minterms, dont_cares, not_zeros);
+    
+    % implicants search is not influeced by the difference between minterms and dont_cares  
     [implicants, A] = getAllImplicants(variables_number, not_zeros);
 
-    % remove dont_cares from A
+    % remove dont_cares from A because they don't need to be covered
     for i = flip(dont_cares)
         A(:,find(not_zeros == i)) = [];
     end
 
-    % TODO fix this
+    % rotate the matrix 
     A = A.';
 
-    % costo a porte
+    % ports
     C = 2 * ones(length(implicants), 1);
     b = ones(length(A(:,1)), 1);
     
-    % costo a diodi
+    % diodes
     for i = 1:length(implicants)
-        C(i) = length(strfind(implicants(i, :),'1')) + length(strfind(implicants(i, :),'0')); 
+        C(i) = utils.countChars(implicants(i, :),'1') + utils.countChars(implicants(i, :),'0'); 
     end
     
+    % all variables must be integers
     intcon = length(implicants);
     
+    % lower and upper bounds are 0s and 1s
     lb = zeros(length(implicants), 1);
     ub = ones(length(implicants), 1);
     
@@ -49,51 +59,18 @@ function synthesize(variables_number, minterms, dont_cares)
     end
 end
 
-function result_implicant = mergeImplicants(first_implicant, second_implicant)
-    
-    result_implicant = first_implicant;
-
-    count = 0;
-
-    for i = 1:length(first_implicant{1})
-
-        f = first_implicant{1}(i);
-        s = second_implicant{1}(i);
-
-        if (f == '-' || s == '-') && f ~= s
-            result_implicant = "";
-			return
-        end
-        
-        if f ~= s
-            result_implicant{1}(i) = '-';
-            count = count + 1;
-        end 
-
-        if count > 1
-            result_implicant = "";
-            return
-        end
-    end
-end
-
-function checkInputs(variables_number, minterms, dont_cares)
+function checkInputs(variables_number, minterms, dont_cares, not_zeros)
 
     combinations = 2 ^ variables_number;
 
     last = 0;
-    for i = minterms    
-        if i > combinations
-            error('minterm index out of bounds')
-        end
+    for i = minterms 
 
-        if i < last
-            error('minterms must be in ascendent order')
-        end
+        if i > combinations ; error('minterm index out of bounds') ; end
 
-        if i == last
-            error('minterm inserted multiple times')
-        end
+        if i < last ; error('minterms must be in ascendent order') ; end
+
+        if i == last ; error('minterm inserted multiple times') ; end
         
         last = i;
     end
@@ -101,25 +78,24 @@ function checkInputs(variables_number, minterms, dont_cares)
     last = 0;
     for i = dont_cares        
         
-        if i > combinations
-            error('dont care index out of bounds')
-        end
+        if i > combinations ; error('dont care index out of bounds') ; end
         
-        if i < last
-            error('dont cares must be in ascendent order')
-        end
+        if i < last ; error('dont cares must be in ascendent order') ; end
 
-        
-        if i == last
-            error('dont care inserted multiple times')
-        end
+        if i == last ; error('dont care inserted multiple times') ; end
         
         last = i;
     end
 
-    if length(minterms) <= 0
-        error('this function is synthesizable with a 0')
-    end  
+    last = 0;
+    for i = not_zeros        
+        
+        if i == last ; error('minterms and dont care collide') ; end      
+
+        last = i;
+    end
+
+    if length(minterms) <= 0 ; error('this function is synthesizable with a 0') ; end  
 
     if length(minterms) + length(dont_cares) == combinations
         error('this function is synthesizable with a 1')
@@ -127,72 +103,26 @@ function checkInputs(variables_number, minterms, dont_cares)
     
 end
 
-function idx = getIndex(implicants, implicant)
-
-    idx = -1;
-
-    for i = 1:length(implicants)
-        if strcmp(implicants(i, :), implicant)
-            idx = i;
-            return
-        end
-    end
-    
-end
-
-function res = merge_sorted(array_1,array_2)
-    
-    i_1 = 1;
-    i_2 = 1;
-    total_length = length(array_1) + length(array_2);
-    res = zeros(total_length, 1);
-    
-    for i = 1: total_length
-        
-        if i_1 > length(array_1)
-            res(i) = array_2(i_2);
-            i_2 = i_2 + 1;
-            continue
-        end
-        
-        if i_2 > length(array_2)
-            res(i) = array_1(i_1);
-            i_1 = i_1 + 1;
-            continue
-        end
-        
-        if array_1(i_1) < array_2(i_2)
-            res(i) = array_1(i_1);
-            i_1 = i_1 + 1;
-        else
-            res(i) = array_2(i_2);
-            i_2 = i_2 + 1;
-        end
-    end
-end
-
 function [implicants, A] = getAllImplicants(variables_number, not_zeros)    
 
     % given
     %   variables_number := integer (ex: 4)
-    %   not_zeros := list of indexes (ex: [0, 2, 4, 6])
+    %   not_zeros := ordered list of indexes (ex: [0, 2, 4, 6])
     % returns
     %   implicants := a list of all implicants
-    %   A := a matrix that indicates whether an implicant cover a not_zero
+    %   A := a coverage matrix that indicates whether an implicant covers or not  a not_zero
     
     implicants = [];
     A = [];
     
     % given the indexes the values are these
     not_zeros_value = not_zeros - 1;
-
     % converts an int to a binary string with minimun length of variables_number
     not_zeros_binaries = dec2bin(not_zeros_value, variables_number);
-
     
     % first itation of QM
-    groups = cell(variables_number + 1, 1);
 
+    groups = cell(variables_number + 1, 1);
     for i = 1:length(not_zeros)
         
         % get group index from number of ones
@@ -203,66 +133,60 @@ function [implicants, A] = getAllImplicants(variables_number, not_zeros)
 
     end
 
-    % check for length (get length of vector)
+    % at first 
+    %   implicants are minterms
+    %   and the A matrix is and identity because every not_zero is cover by its minterm 
     implicants = not_zeros_binaries;
-
-    % at first the matrix is identical because every not_zero is cover by its cell 
     A = eye(length(implicants));
     
-    % while groups is not empty
-    while 1
+    % other iterations of QM
 
-        new_groups = cell(variables_number + 1, 1);
+    while ~ utils.allCellsEmpty(groups)
+
+        next_groups = cell(variables_number + 1, 1);
         
         for i = 1:length(groups) - 1 ; group = groups{i};
     
             if isempty(group) ; continue ; end
-    
-            group_to_check = groups{i + 1};
-    
+            
+            % in QM you need to compare with the next group
+            group_to_compare_with = groups{i + 1};
+                
             for j = 1:length(group) ; implicant = group(j);
-    
-                for k = 1:length(group_to_check) ; to_check = group_to_check(k);
+                
+                for k = 1:length(group_to_compare_with) ; implicant_to_compare_with = group_to_compare_with(k);
                     
-                    result_implicant = mergeImplicants(implicant, to_check);
+                    result_implicant = utils.mergeStrings(implicant, implicant_to_compare_with, '-');
     
+                    % if the result_implicant is empty continue
                     if result_implicant == "" ; continue ; end
                     
                     % if the result_implicant is already in redundant continue
-                    if any(strcmp(new_groups{i}, result_implicant)) ; continue ; end
-
+                    if any(strcmp(next_groups{i}, result_implicant)) ; continue ; end
+                    
+                    % if result_implicant is correct then add it to the implicants
                     implicants = [implicants ; result_implicant{1}];
                     
                     % TODO find a way to get the index of an implicant in O(1)
                     
-                    % insert a new line
+                    % insert a new line in the coverage matrix
                     A(length(implicants),1) = 0;
                     
-                    % get the two indexes
-                    idx_implicant = getIndex(implicants, implicant{1});
-                    idx_to_check = getIndex(implicants, to_check{1});
+                    % get the two implicants' indexes
+                    idx_implicant = utils.findString(implicants, implicant{1});
+                    idx_to_check = utils.findString(implicants, implicant_to_compare_with{1});
                     
-                    % logical or for implicant cover
+                    % the result implicant covers the OR bitmap of the two generator implicants by definitions
                     A(length(implicants), :) = A(idx_implicant, :) | A(idx_to_check, :);
-
-                    new_groups{i} = [new_groups{i}, result_implicant];
+                    
+                    % add the result implicant in the next groups
+                    %   i indicates the next_groups' current group
+                    next_groups{i} = [next_groups{i}, result_implicant];
                 end
             end    
         end
 
-        % check if groups are empty
-
-        all_empty = 1;
-        for i = 1:variables_number + 1
-            if ~ isempty(new_groups{i})
-                all_empty = 0;
-            end
-        end
-    
-        % exit while
-        if all_empty ; break ; end 
-        
-        groups = new_groups;
+        groups = next_groups;
 
     end
 end
