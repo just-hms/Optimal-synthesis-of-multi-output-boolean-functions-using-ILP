@@ -12,7 +12,7 @@ classdef utils
             i_1 = 1;
             i_2 = 1;
             total_length = length(array_1) + length(array_2);
-            res = zeros(total_length, 1);
+            res = zeros(1, total_length);
             
             for i = 1: total_length
                 
@@ -86,8 +86,8 @@ classdef utils
             
         end
 
-        function count = countChars(string_array, char_to_find)
-            count = length(strfind(string_array, char_to_find));
+        function count = countChars(char_array, char_to_find)
+            count = length(strfind(char_array, char_to_find));
         end
 
         function res = allCellsEmpty(cell_array)
@@ -101,5 +101,31 @@ classdef utils
             end
         end
 
+        % https://uk.mathworks.com/help/matlab/matlab_prog/argument-validation-functions.html
+
+        function mustBeInAscendingOrder(a)
+
+            if utils.isInAscendingOrder(a) ; return ; end
+
+            eidType = 'mustBeInAscendingOrder:notInAscendingOrder';
+            msgType = 'Input must be in ascending order';
+            throwAsCaller(MException(eidType,msgType))
+        end
+
+        function res = isInAscendingOrder(a)
+
+            res = 1;
+            last = 0;
+
+            for i = a 
+
+                if i <= last
+                    res = 0;
+                    return;
+                end
+                last = i;
+            end
+
+        end
    end
 end
