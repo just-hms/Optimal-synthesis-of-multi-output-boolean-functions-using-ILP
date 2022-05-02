@@ -1,14 +1,23 @@
-function [implicants, A] = getAllImplicants(variables_number, not_zeros)    
+function [implicants, A] = getAllImplicants(variables_number, minterms, dont_cares)    
     
     arguments
         variables_number (1,1) double {mustBeInteger, mustBePositive}
-        not_zeros (1,:) double {mustBeInteger, mustBePositive, utils.mustBeInAscendingOrder} 
+        minterms (1,:) double {mustBeInteger, mustBePositive, utils.mustBeInAscendingOrder} 
+        dont_cares (1,:) double {mustBeInteger, mustBePositive, utils.mustBeInAscendingOrder} = []
     end
 
+    % uses
+    %   QM algorithm to retrieve a list of all implicants
     % returns
     %   implicants := a list of all implicants generated using QM algorithm
     %   A := a coverage matrix that indicates whether an implicant covers or not a not_zero
     
+    not_zeros = utils.merge_sorted(minterms, dont_cares);
+
+    if ~ utils.isInAscendingOrder(not_zeros)
+        error('Inputs minterms and dont_cares have an element in common')
+    end
+
     % given the indexes the values are these
     not_zeros_value = not_zeros - 1;
     not_zeros_binaries = string(dec2bin(not_zeros_value, variables_number));
@@ -19,7 +28,7 @@ function [implicants, A] = getAllImplicants(variables_number, not_zeros)
     for i = 1:length(not_zeros)
         
         % get group index from number of ones
-        index = utils.countChars(not_zeros_binaries(i,:),'1') + 1;
+        index = utils.countMatches(not_zeros_binaries(i,:),"1") + 1;
         
         % insert the not_zero in the correct group
         groups{index} = [groups{index}, not_zeros_binaries(i,:)];  
@@ -86,4 +95,20 @@ function [implicants, A] = getAllImplicants(variables_number, not_zeros)
         groups = next_iteration_groups;
 
     end
+
+    % remove dont_cares costraints from coverage matrix because they don't need to be covered
+    for i = flip(dont_cares)
+        A(:,not_zeros == i) = [];
+    end
+
+    % remove implicants that covered only dont_cares
+    for i = length(implicants):-1:1 
+        if ~ any(A(i,:) == 1)
+            A(i,:) = [];
+            implicants(i) = [];
+        end
+    end
+    
+    A = A.';
+    
 end

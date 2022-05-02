@@ -4,8 +4,11 @@ classdef utils
         
         function res = merge_sorted(array_1,array_2)
             
-            % given
-            %   two sorted arrays
+            arguments
+                array_1 (1,:) double {mustBeInteger, mustBePositive, utils.mustBeInAscendingOrder} 
+                array_2 (1,:) double {mustBeInteger, mustBePositive, utils.mustBeInAscendingOrder} 
+            end
+
             % returns
             %   a sorted array
             
@@ -39,36 +42,38 @@ classdef utils
         end
 
         function res = mergeStrings(first_string, second_string, substitute_char)
-            
-            % given
-            %   first_string := string
-            %   second_string := string
-            %   substitute_char := character to insert when strings differ
-            % returns
-            %   res := merged string
-        
+
+            arguments
+                first_string string
+                second_string string
+                substitute_char char
+            end
+
             res = first_string;
         
             count = 0;
         
             for i = 1:length(first_string{1})
         
-                f = first_string{1}(i);
-                s = second_string{1}(i);
-        
-                if (f == substitute_char || s == substitute_char) && f ~= s
-                    res = "";
-                    return
-                end
+                first_string_char = first_string{1}(i);
+                second_string_char = second_string{1}(i);
                 
-                if f ~= s
+                % if the chars differ
+                if first_string_char ~= second_string_char
+
+                    % if one of the chars is the substitue_char  
+                    if first_string_char == substitute_char || second_string_char == substitute_char
+                        res = "";
+                        return;
+                    end
+
                     res{1}(i) = substitute_char;
                     count = count + 1;
                 end 
         
                 if count > 1
                     res = "";
-                    return
+                    return;
                 end
             end
         end
@@ -80,23 +85,33 @@ classdef utils
             for i = 1:length(string_array)
                 if strcmp(string_array(i, :), string)
                     idx = i;
-                    return
+                    return;
                 end
             end
             
         end
 
-        function count = countChars(char_array, char_to_find)
-            count = length(strfind(char_array, char_to_find));
+        function count = countMatches(char_array, pat)
+
+            arguments
+                char_array string
+                pat pattern
+            end
+
+            % returns
+            %    how many time the pattern is found in the char array specified
+
+            count = length(strfind(char_array, pat));
         end
 
-        function res = allCellsEmpty(cell_array)
+
+        function res = areAllCellsEmpty(cell_array)
         
             res = 1;
             for i = 1:length(cell_array)
                 if ~ isempty(cell_array{i})
                     res = 0;
-                    return
+                    return;
                 end
             end
         end
@@ -126,6 +141,6 @@ classdef utils
                 last = i;
             end
 
-        end
+        end 
    end
 end
