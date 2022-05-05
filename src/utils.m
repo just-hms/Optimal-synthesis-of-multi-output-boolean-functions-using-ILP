@@ -2,7 +2,7 @@ classdef utils
    
     methods (Static)
         
-        function res = merge_sorted(array_1,array_2)
+        function res = mergeSorted(array_1,array_2)
             
             arguments
                 array_1 (1,:) double {mustBeInteger, mustBePositive, utils.mustBeInAscendingOrder} 
@@ -49,14 +49,20 @@ classdef utils
                 substitute_char char
             end
 
-            res = first_string;
-        
+            first_chars = first_string{1}; 
+            second_chars = second_string{1}; 
+            res = first_chars;
+            
+            if length(first_chars) ~= length(second_chars)
+                res = "";
+            end
+
             count = 0;
         
-            for i = 1:length(first_string{1})
+            for i = 1:length(first_chars)
         
-                first_string_char = first_string{1}(i);
-                second_string_char = second_string{1}(i);
+                first_string_char = first_chars(i);
+                second_string_char = second_chars(i);
                 
                 % if the chars differ
                 if first_string_char ~= second_string_char
@@ -67,7 +73,7 @@ classdef utils
                         return;
                     end
 
-                    res{1}(i) = substitute_char;
+                    res(i) = substitute_char;
                     count = count + 1;
                 end 
         
@@ -76,6 +82,9 @@ classdef utils
                     return;
                 end
             end
+
+            res = string(res);
+
         end
 
         function idx = findString(string_array, string)
@@ -139,8 +148,31 @@ classdef utils
                     return;
                 end
                 last = i;
-            end
+            end 
 
         end 
-   end
+
+        function res = minimumBits(numbers)
+            res = ceil(log2(max(numbers)));
+        end
+
+        function [x,v] = intlinprogWrapper(C, A, b, variablesNumber, verbose)
+            
+            % calls intrlinprog setting intcon, lb, ub with the specified variablesNumber
+            % sets on or off the display using the verbose parameter
+
+            intcon = 1:variablesNumber;
+            lb = zeros(variablesNumber, 1);
+            ub = ones(variablesNumber, 1);
+
+            if verbose
+                intlinprogOptions = optimoptions('intlinprog');
+            else
+                intlinprogOptions = optimoptions('intlinprog', Display = 'off');
+            end
+
+            [x,v] = intlinprog(C,intcon, A, b, [], [], lb, ub, intlinprogOptions);
+        end
+
+    end
 end
