@@ -1,45 +1,55 @@
-function [implicants, v] = oneOutputSynthesis(variables_number, minterms, dont_cares, diodes_cost)
+function [implicants, v] = oneOutputSynthesis(minterms, dontCares, options)
     
     arguments
-        variables_number (1,1) double {mustBeInteger, mustBePositive}
-        minterms (1,:) double {mustBeInteger, mustBePositive, utils.mustBeInAscendingOrder}
-        dont_cares (1,:) double {mustBeInteger, mustBePositive, utils.mustBeInAscendingOrder} 
-        diodes_cost (1,1) double {mustBeNumericOrLogical} = 1
+        
+        minterms (1,:) double {mustBeInteger, mustBePositive, mustBeNonempty, utils.mustBeInAscendingOrder}
+        dontCares (1,:) double {mustBeInteger, mustBePositive, utils.mustBeInAscendingOrder} 
+        
+        options.InputsNumber (1,1) double {mustBeInteger, mustBePositive} = utils.minimumBits([minterms, dontCares])
+        options.DiodesCost (1,1) double {mustBeNumericOrLogical} = 1
+        options.Verbose (1,1) double {mustBeNumericOrLogical} = 0
     end
 
     % returns
     %   the minimal cost synthesis of the boolean function described by them
 
-    [implicants, A] = getAllImplicants(variables_number, minterms, dont_cares);
+    if options.Verbose
+        fprintf('\nThe inputs number is:\n\n')                  ; disp(options.InputsNumber)
+    end
 
-    % ports cost
+    [implicants, A] = getAllImplicants(options.InputsNumber, minterms, dontCares);
+
+    % ports cost for every AND port
     C = ones(length(implicants), 1);
     b = ones(length(minterms), 1);
     
     % diodes cost
-    if diodes_cost
+    if options.DiodesCost
         for i = 1:length(implicants)
             C(i) = utils.countMatches(implicants(i, :), "0" | "1") + 1; 
         end
     end
 
-    % all variables must be integers
-    intcon = 1:length(implicants);
-    
-    % lower and upper bounds are 0s and 1s
-    lb = zeros(length(implicants), 1);
-    ub = ones(length(implicants), 1);
-    
-    [x, v] = intlinprog(C,intcon,- A, - b,[],[],lb,ub);
+    if options.Verbose
+        fprintf(newline, 'All possible implicants are:\n\n')    ; disp(implicants)
+        fprintf('The coverage matrix is:\n\n')                  ; disp(A)
+        fprintf('The cost vector is:\n\n')                      ; disp(C)
+    end
+
+    [x, v] = utils.intlinprogWrapper(C, -A, -b, length(implicants), options.Verbose);
+
+    if ~ options.DiodesCost
+        v = v + 1;
+    end
+
+    if options.Verbose
+        fprintf('Solution:\n\n')    ; disp(x)
+        fprintf('The cost is:\n\n') ; disp(v)
+    end
 
     % remove all implicants that are not used
     for i = flip(x)
         implicants(x == 0) = []; 
-    end
-
-    % or port cost
-    if ~ diodes_cost
-        v = v + 1;
     end
     
 end

@@ -18,8 +18,6 @@ function [implicants, v] = multipleOutputSynthesis(inputsNumber, outputs, option
     A = [];
     totalMintermLength = 0;
 
-    notRedundantImplicants = [];
-
     for i = 1:length(outputs) ; output = outputs(i); 
 
         minterms = output{1}{1}; 
