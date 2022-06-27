@@ -1,19 +1,24 @@
-function [implicants, v] = multipleOutputSynthesis(inputsNumber, outputs, options)
+function [implicants,v,timedOut] = multipleOutputSynthesis(inputsNumber,outputs,options)
 
     arguments
-        inputsNumber (1,1) double {mustBeInteger, mustBePositive}
-        outputs (:,2) cell
+        inputsNumber (1,1) double ...
+            {mustBeInteger,mustBePositive}
+        outputs (1,:) cell
 
-        options.DiodesCost (1,1) double {mustBeNumericOrLogical} = 1
-        options.Verbose (1,1) double {mustBeNumericOrLogical} = 0
+        options.GatesInputCost (1,1) double ...
+            {mustBeNumericOrLogical} = 1
+        options.Verbose (1,1) double ...
+            {mustBeNumericOrLogical} = 0
+        options.Timeout (1,1) double ...
+            {mustBeGreaterThanOrEqual(options.Timeout,0)} = 0
     end
     
     % returns
-    %   the minimal cost synthesis of the boolean outputs described by them
+    %   the minimal cost synthesis
     
     % set of all implicants
     implicantsSet = [];
-    outputsImplicantsCount = zeros(length(outputs), 1);
+    outputsImplicantsCount = zeros(length(outputs),1);
     
     A = [];
     totalMintermLength = 0;
@@ -31,53 +36,61 @@ function [implicants, v] = multipleOutputSynthesis(inputsNumber, outputs, option
             error('Dont_cares must be in ascending order')
         end
         
-        [implicants_k, A_k] = getAllImplicants(inputsNumber, minterms, dont_cares);
+        [implicants_k,A_k] = ...
+            getAllImplicants(inputsNumber,minterms,dont_cares);
         
         outputsImplicantsCount(i) = length(implicants_k);
         implicantsSet = [implicantsSet ; implicants_k];
         
         % every coverage matrix' costraints are indipendent
-        A = blkdiag(A, A_k);
+        A = blkdiag(A,A_k);
 
         totalMintermLength = totalMintermLength + length(minterms);
         
         if options.Verbose
             fprintf('\nOutput %d:\n\n',i);
-            fprintf('All possible implicants are:\n\n') ; disp(implicants_k)
-            fprintf('The coverage matrix is:\n\n')      ; disp(A_k)
+            fprintf('All possible implicants are:\n\n')
+            disp(implicants_k)
+            fprintf('The coverage matrix is:\n\n')
+            disp(A_k)
         end
 
     end
 
-    notRedundantImplicants = unique(implicantsSet);
+    uniqueImplicants = unique(implicantsSet);
 
-    % one more costraint for every notRedundantImplicant
-    %   every notRedundantImplicants must be chosen if a corresponding implicant is chosen
+    % add one more costraint for every uniqueImplicants
+    %   every uniqueImplicants must be chosen if 
+    %   a corresponding implicant is chosen
 
-    E = eye(length(notRedundantImplicants));
-    A = blkdiag(A, E);
+    E = eye(length(uniqueImplicants));
+    A = blkdiag(A,E);
     
     % choice costraints:
     %   Z_i > ∑ V_ij * 1/(length(outputs) + 1)
 
-    for i = 1:length(notRedundantImplicants); notRedundantImplicant = notRedundantImplicants(i);
-        A(totalMintermLength + i, implicantsSet == notRedundantImplicant) = -1 / (length(outputs) + 1);
+    for i = 1:length(uniqueImplicants)
+        
+        uniqueImplicant = uniqueImplicants(i);
+        
+        A(totalMintermLength + i,implicantsSet == uniqueImplicant) = ...
+            -1 / (length(outputs) + 1);
     end
     
-    variablesLength = length(implicantsSet) + length(notRedundantImplicants); 
+    variablesLength = length(implicantsSet) + length(uniqueImplicants); 
     
-    % ports cost
-    % only the notRedundantImplicants must be considered in the cost
-    C = ones(variablesLength, 1);
+    % literal cost
+    % only the uniqueImplicants must be considered in the cost
+    C = ones(variablesLength,1);
     C(1:length(implicantsSet)) = 0;
     
     % in the choice costraints the costant value is 0 
     % in the cover constraints the costant value is 1
-    b = zeros(totalMintermLength + length(notRedundantImplicants), 1);
+    b = zeros(totalMintermLength + length(uniqueImplicants),1);
     b(1:totalMintermLength) = 1;
     
     % diodes cost
-    if options.DiodesCost
+    if options.GatesInputCost
 
         % 1 every time a port is used in an output
         for i = 1:length(implicantsSet)
@@ -85,32 +98,50 @@ function [implicants, v] = multipleOutputSynthesis(inputsNumber, outputs, option
         end
 
         % c_i every time a port is chosen
-        for i = 1:length(notRedundantImplicants)
-            C(i + length(implicantsSet)) =  utils.countMatches(notRedundantImplicants(i, :), "0" | "1");
+        for i = 1:length(uniqueImplicants)
+            C(i + length(implicantsSet)) = ...
+                utils.countMatches(uniqueImplicants(i,:),"0" | "1");
         end
     end
 
     if options.Verbose
-        fprintf('The not redundant implicants are:\n\n')    ; disp(notRedundantImplicants)
-        fprintf('The choice matrix is:\n\n')                ; disp(A(totalMintermLength + 1:end, :))
-        fprintf('The cost vector is:\n\n')                  ; disp(C)
+        fprintf('The not redundant implicants are:\n\n')
+        disp(uniqueImplicants)
+
+        fprintf('The choice matrix is (one implicant each column):\n\n')
+
+        format bank
+        disp(A(totalMintermLength + 1:end,:).')
+        format default
+        
+        fprintf('The cost vector is:\n\n')
+        disp(C.')
     end
 
-    [x, v] = utils.intlinprogWrapper(C, -A, -b, variablesLength, options.Verbose);
+    [x,v,timedOut] = utils.intlinprogWrap( ...
+        C, ...
+        -A, ...
+        -b, ...
+        variablesLength, ...
+        options.Verbose, ...
+        options.Timeout ...
+    );
 
-    % one OR for output
-    if ~ options.DiodesCost
+    % if it's literal cost add 1 for, everty OR/output
+    if ~ options.GatesInputCost
         v = v + length(output);
     end
 
     if options.Verbose
-        fprintf('Solution:\n\n')    ; disp(x)
-        fprintf('The cost is:\n\n') ; disp(v)
+        fprintf('Solution:\n\n')
+        disp(x.')
+        fprintf('The cost is:\n\n')
+        disp(v)
     end
 
     % build the result implicants
 
-    implicants = cell(length(outputs), 1);
+    implicants = cell(length(outputs),1);
     
     outputIndex = 1;
     outputImplicantsIndex = 1;
@@ -127,7 +158,8 @@ function [implicants, v] = multipleOutputSynthesis(inputsNumber, outputs, option
                 outputIndex = outputIndex + 1;
             end
 
-            implicants{outputIndex} = [implicants{outputIndex} ; implicantsSet(i)];     
+            implicants{outputIndex} = ...
+                [implicants{outputIndex} ; implicantsSet(i)];     
         end
         
         % increment the current outputImplicantsIndex 

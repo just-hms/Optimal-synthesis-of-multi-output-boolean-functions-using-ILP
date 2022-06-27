@@ -5,8 +5,10 @@ classdef utils
         function res = mergeSorted(array_1,array_2)
             
             arguments
-                array_1 (1,:) double {mustBeInteger, mustBePositive, utils.mustBeInAscendingOrder} 
-                array_2 (1,:) double {mustBeInteger, mustBePositive, utils.mustBeInAscendingOrder} 
+                array_1 (1,:) double ...
+                    {mustBeInteger,mustBePositive,utils.mustBeAscending} 
+                array_2 (1,:) double ...
+                    {mustBeInteger,mustBePositive,utils.mustBeAscending} 
             end
 
             % returns
@@ -15,20 +17,20 @@ classdef utils
             i_1 = 1;
             i_2 = 1;
             total_length = length(array_1) + length(array_2);
-            res = zeros(1, total_length);
+            res = zeros(1,total_length);
             
             for i = 1: total_length
                 
                 if i_1 > length(array_1)
                     res(i) = array_2(i_2);
                     i_2 = i_2 + 1;
-                    continue
+                    continue;
                 end
                 
                 if i_2 > length(array_2)
                     res(i) = array_1(i_1);
                     i_1 = i_1 + 1;
-                    continue
+                    continue;
                 end
                 
                 if array_1(i_1) < array_2(i_2)
@@ -41,34 +43,35 @@ classdef utils
             end
         end
 
-        function res = mergeStrings(first_string, second_string, substitute_char)
+        function res = mergeStrings(a,b,substitute_char)
 
             arguments
-                first_string string
-                second_string string
+                a string
+                b string
                 substitute_char char
             end
 
-            first_chars = first_string{1}; 
-            second_chars = second_string{1}; 
-            res = first_chars;
+            a_chars = a{1}; 
+            b_chars = b{1}; 
+            res = a_chars;
             
-            if length(first_chars) ~= length(second_chars)
+            if length(a_chars) ~= length(b_chars)
                 res = "";
             end
 
             count = 0;
         
-            for i = 1:length(first_chars)
+            for i = 1:length(a_chars)
         
-                first_string_char = first_chars(i);
-                second_string_char = second_chars(i);
+                a_char = a_chars(i);
+                b_char = b_chars(i);
                 
                 % if the chars differ
-                if first_string_char ~= second_string_char
+                if a_char ~= b_char
 
                     % if one of the chars is the substitue_char  
-                    if first_string_char == substitute_char || second_string_char == substitute_char
+                    if a_char == substitute_char ...
+                    || b_char == substitute_char
                         res = "";
                         return;
                     end
@@ -87,12 +90,12 @@ classdef utils
 
         end
 
-        function idx = findString(string_array, string)
+        function idx = findString(string_array,string)
 
             idx = -1;
         
             for i = 1:length(string_array)
-                if strcmp(string_array(i, :), string)
+                if strcmp(string_array(i,:),string)
                     idx = i;
                     return;
                 end
@@ -100,7 +103,7 @@ classdef utils
             
         end
 
-        function count = countMatches(char_array, pat)
+        function count = countMatches(char_array,pat)
 
             arguments
                 char_array string
@@ -108,9 +111,9 @@ classdef utils
             end
 
             % returns
-            %    how many time the pattern is found in the char array specified
+            %    how many times the pattern is found
 
-            count = length(strfind(char_array, pat));
+            count = length(strfind(char_array,pat));
         end
 
 
@@ -125,13 +128,12 @@ classdef utils
             end
         end
 
-        % https://uk.mathworks.com/help/matlab/matlab_prog/argument-validation-functions.html
 
-        function mustBeInAscendingOrder(a)
+        function mustBeAscending(a)
 
             if utils.isInAscendingOrder(a) ; return ; end
 
-            eidType = 'mustBeInAscendingOrder:notInAscendingOrder';
+            eidType = 'mustBeAscending:notInAscendingOrder';
             msgType = 'Input must be in ascending order';
             throwAsCaller(MException(eidType,msgType))
         end
@@ -156,22 +158,39 @@ classdef utils
             res = ceil(log2(max(numbers)));
         end
 
-        function [x,v] = intlinprogWrapper(C, A, b, variablesNumber, verbose)
+        function [x,v,timedOut] = intlinprogWrap(C,A,b,variablesNumber,verbose,timeout)
             
-            % calls intrlinprog setting intcon, lb, ub with the specified variablesNumber
-            % sets on or off the display using the verbose parameter
+            % calls intrlinprog 
+            %   setting intcon,lb,ub with the specified variablesNumber
+            %   sets on or off the display using the verbose parameter
 
             intcon = 1:variablesNumber;
-            lb = zeros(variablesNumber, 1);
-            ub = ones(variablesNumber, 1);
+            lb = zeros(variablesNumber,1);
+            ub = ones(variablesNumber,1);
 
-            if verbose
-                intlinprogOptions = optimoptions('intlinprog');
-            else
-                intlinprogOptions = optimoptions('intlinprog', Display = 'off');
+            if timeout <= 0
+                timeout = 7200;
             end
 
-            [x,v] = intlinprog(C,intcon, A, b, [], [], lb, ub, intlinprogOptions);
+            if verbose
+                intlinprogOptions = ...
+                    optimoptions('intlinprog',MaxTime = timeout);
+            else
+                intlinprogOptions = optimoptions( ...
+                    'intlinprog',...
+                    Display = 'off',...
+                    MaxTime = timeout ...
+                );
+            end
+
+            [x,v,exitflag] = ...
+                intlinprog(C,intcon,A,b,[],[],lb,ub,intlinprogOptions);
+            
+            timedOut = exitflag == 2;
+
+            if exitflag ~= 1
+                fprintf(2, 'Intlinprog finished with exit flag %d\n', exitflag)
+            end
         end
 
     end
