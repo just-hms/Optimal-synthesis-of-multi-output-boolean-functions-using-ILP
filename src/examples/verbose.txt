@@ -1,0 +1,272 @@
+
+The inputs number is:
+
+     3
+
+
+QM iteration 1:
+
+    {0x0 double      }
+    {["001"    "010"]}
+    {["011"    "101"]}
+    {0x0 double      }
+
+
+QM iteration 2:
+
+    {0x0 double               }
+    {["0-1"    "-01"    "01-"]}
+    {0x0 double               }
+    {0x0 double               }
+
+All possible implicants are:
+
+    "001"
+    "010"
+    "011"
+    "101"
+    "0-1"
+    "-01"
+    "01-"
+
+The coverage matrix is:
+
+     1     0     0     0     1     1     0
+     0     1     0     0     0     0     1
+     0     0     1     0     1     0     1
+     0     0     0     1     0     1     0
+
+The cost vector is:
+
+     4     4     4     4     3     3     3
+
+LP:                Optimal objective value is 6.000000.                                             
+
+
+Optimal solution found.
+
+Intlinprog stopped at the root node because the objective value is within a gap tolerance of the optimal value, options.AbsoluteGapTolerance = 0 (the default value). The intcon
+variables are integer within tolerance, options.IntegerTolerance = 1e-05 (the default value).
+
+Solution:
+
+     0     0     0     0     0     1     1
+
+The cost is:
+
+     6
+
+Solution: [x2`x1 + x3`x2]
+
+The inputs number is:
+
+     3
+
+
+QM iteration 1:
+
+    {0x0 double      }
+    {["001"         ]}
+    {["101"    "110"]}
+    {["111"         ]}
+
+
+QM iteration 2:
+
+    {0x0 double      }
+    {["-01"         ]}
+    {["1-1"    "11-"]}
+    {0x0 double      }
+
+All possible implicants are:
+
+    "001"
+    "101"
+    "110"
+    "111"
+    "-01"
+    "1-1"
+    "11-"
+
+The coverage matrix is:
+
+     1     0     0     0     1     0     0
+     0     1     0     0     1     1     0
+     0     0     1     0     0     0     1
+     0     0     0     1     0     1     1
+
+The cost vector is:
+
+     4     4     4     4     3     3     3
+
+LP:                Optimal objective value is 6.000000.                                             
+
+
+Optimal solution found.
+
+Intlinprog stopped at the root node because the objective value is within a gap tolerance of the optimal value, options.AbsoluteGapTolerance = 0 (the default value). The intcon
+variables are integer within tolerance, options.IntegerTolerance = 1e-05 (the default value).
+
+Solution:
+
+     0     0     0     0     1     0     1
+
+The cost is:
+
+     6
+
+Solution: [x2`x1 + x3x2]
+
+Output 1:
+
+All possible implicants are:
+
+    "001"
+    "010"
+    "011"
+    "101"
+    "0-1"
+    "-01"
+    "01-"
+
+The coverage matrix is:
+
+     1     0     0     0     1     1     0
+     0     1     0     0     0     0     1
+     0     0     1     0     1     0     1
+     0     0     0     1     0     1     0
+
+
+Output 2:
+
+All possible implicants are:
+
+    "001"
+    "101"
+    "110"
+    "111"
+    "-01"
+    "1-1"
+    "11-"
+
+The coverage matrix is:
+
+     1     0     0     0     1     0     0
+     0     1     0     0     1     1     0
+     0     0     1     0     0     0     1
+     0     0     0     1     0     1     1
+
+The not redundant implicants are:
+
+    "-01"
+    "0-1"
+    "001"
+    "01-"
+    "010"
+    "011"
+    "1-1"
+    "101"
+    "11-"
+    "110"
+    "111"
+
+The choice matrix is (one implicant each column):
+
+             0             0          0.33             0             0             0             0             0             0             0             0
+             0             0             0             0          0.33             0             0             0             0             0             0
+             0             0             0             0             0          0.33             0             0             0             0             0
+             0             0             0             0             0             0             0          0.33             0             0             0
+             0          0.33             0             0             0             0             0             0             0             0             0
+          0.33             0             0             0             0             0             0             0             0             0             0
+             0             0             0          0.33             0             0             0             0             0             0             0
+             0             0          0.33             0             0             0             0             0             0             0             0
+             0             0             0             0             0             0             0          0.33             0             0             0
+             0             0             0             0             0             0             0             0             0          0.33             0
+             0             0             0             0             0             0             0             0             0             0          0.33
+          0.33             0             0             0             0             0             0             0             0             0             0
+             0             0             0             0             0             0          0.33             0             0             0             0
+             0             0             0             0             0             0             0             0          0.33             0             0
+         -1.00             0             0             0             0             0             0             0             0             0             0
+             0         -1.00             0             0             0             0             0             0             0             0             0
+             0             0         -1.00             0             0             0             0             0             0             0             0
+             0             0             0         -1.00             0             0             0             0             0             0             0
+             0             0             0             0         -1.00             0             0             0             0             0             0
+             0             0             0             0             0         -1.00             0             0             0             0             0
+             0             0             0             0             0             0         -1.00             0             0             0             0
+             0             0             0             0             0             0             0         -1.00             0             0             0
+             0             0             0             0             0             0             0             0         -1.00             0             0
+             0             0             0             0             0             0             0             0             0         -1.00             0
+             0             0             0             0             0             0             0             0             0             0         -1.00
+
+The cost vector is:
+
+     1     1     1     1     1     1     1     1     1     1     1     1     1     1     2     2     3     2     3     3     2     3     2     3     3
+
+LP:                Optimal objective value is 6.666667.                                             
+
+Heuristics:        Found 1 solution using ZI round.                                                 
+                   Upper bound is 10.000000.                                                        
+                   Relative gap is 0.00%.                                                          
+
+
+Optimal solution found.
+
+Intlinprog stopped at the root node because the objective value is within a gap tolerance of the optimal value, options.AbsoluteGapTolerance = 0 (the default value). The intcon
+variables are integer within tolerance, options.IntegerTolerance = 1e-05 (the default value).
+
+
+A =
+
+  Columns 1 through 17
+
+    1.0000         0         0         0    1.0000    1.0000         0         0         0         0         0         0         0         0         0         0         0
+         0    1.0000         0         0         0         0    1.0000         0         0         0         0         0         0         0         0         0         0
+         0         0    1.0000         0    1.0000         0    1.0000         0         0         0         0         0         0         0         0         0         0
+         0         0         0    1.0000         0    1.0000         0         0         0         0         0         0         0         0         0         0         0
+         0         0         0         0         0         0         0    1.0000         0         0         0    1.0000         0         0         0         0         0
+         0         0         0         0         0         0         0         0    1.0000         0         0    1.0000    1.0000         0         0         0         0
+         0         0         0         0         0         0         0         0         0    1.0000         0         0         0    1.0000         0         0         0
+         0         0         0         0         0         0         0         0         0         0    1.0000         0    1.0000    1.0000         0         0         0
+         0         0         0         0         0   -0.3333         0         0         0         0         0   -0.3333         0         0    1.0000         0         0
+         0         0         0         0   -0.3333         0         0         0         0         0         0         0         0         0         0    1.0000         0
+   -0.3333         0         0         0         0         0         0   -0.3333         0         0         0         0         0         0         0         0    1.0000
+         0         0         0         0         0         0   -0.3333         0         0         0         0         0         0         0         0         0         0
+         0   -0.3333         0         0         0         0         0         0         0         0         0         0         0         0         0         0         0
+         0         0   -0.3333         0         0         0         0         0         0         0         0         0         0         0         0         0         0
+         0         0         0         0         0         0         0         0         0         0         0         0   -0.3333         0         0         0         0
+         0         0         0   -0.3333         0         0         0         0   -0.3333         0         0         0         0         0         0         0         0
+         0         0         0         0         0         0         0         0         0         0         0         0         0   -0.3333         0         0         0
+         0         0         0         0         0         0         0         0         0   -0.3333         0         0         0         0         0         0         0
+         0         0         0         0         0         0         0         0         0         0   -0.3333         0         0         0         0         0         0
+
+  Columns 18 through 25
+
+         0         0         0         0         0         0         0         0
+         0         0         0         0         0         0         0         0
+         0         0         0         0         0         0         0         0
+         0         0         0         0         0         0         0         0
+         0         0         0         0         0         0         0         0
+         0         0         0         0         0         0         0         0
+         0         0         0         0         0         0         0         0
+         0         0         0         0         0         0         0         0
+         0         0         0         0         0         0         0         0
+         0         0         0         0         0         0         0         0
+         0         0         0         0         0         0         0         0
+    1.0000         0         0         0         0         0         0         0
+         0    1.0000         0         0         0         0         0         0
+         0         0    1.0000         0         0         0         0         0
+         0         0         0    1.0000         0         0         0         0
+         0         0         0         0    1.0000         0         0         0
+         0         0         0         0         0    1.0000         0         0
+         0         0         0         0         0         0    1.0000         0
+         0         0         0         0         0         0         0    1.0000
+
+Solution:
+
+     0     0     0     0     0     1     1     0     0     0     0     1     0     1     1     0     0     1     0     0     0     0     1     0     0
+
+The cost is:
+
+   10.0000
+
+Solution: [x2`x1 + x3`x2][x2`x1 + x3x2]

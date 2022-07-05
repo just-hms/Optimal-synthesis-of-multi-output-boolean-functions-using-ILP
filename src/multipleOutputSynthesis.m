@@ -69,6 +69,7 @@ function [implicants,v,timedOut] = multipleOutputSynthesis(inputsNumber,outputs,
     % choice costraints:
     %   Z_i > ∑ V_ij * 1/(length(outputs) + 1)
 
+    % TODO this by naming another matrix and then add it to A (also A is not the best name at this point)
     for i = 1:length(uniqueImplicants)
         
         uniqueImplicant = uniqueImplicants(i);
@@ -110,8 +111,9 @@ function [implicants,v,timedOut] = multipleOutputSynthesis(inputsNumber,outputs,
 
         fprintf('The choice matrix is (one implicant each column):\n\n')
 
+        % TODO check the minus
         format bank
-        disp(A(totalMintermLength + 1:end,:).')
+        disp(-A(totalMintermLength + 1:end,:).')
         format default
         
         fprintf('The cost vector is:\n\n')
@@ -126,6 +128,8 @@ function [implicants,v,timedOut] = multipleOutputSynthesis(inputsNumber,outputs,
         options.Verbose, ...
         options.Timeout ...
     );
+
+    A
 
     % if it's literal cost add 1 for, everty OR/output
     if ~ options.GatesInputCost
