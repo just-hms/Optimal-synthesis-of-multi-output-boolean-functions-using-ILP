@@ -1,6 +1,6 @@
 addpath(genpath('./../'))
 
-diary verbose.txt
+diary verbose.out
 
 y_1 = {[1,2,3,5] + 1, []};
 y_2 = {[1,5,6,7] + 1, []};

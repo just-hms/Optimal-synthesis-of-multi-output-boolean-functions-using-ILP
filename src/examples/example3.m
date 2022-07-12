@@ -12,4 +12,4 @@ displayImplicants({implicants_2})
 displayImplicants(implicants)
 
 savings = round((v_1 + v_2 - v) / (v_1 + v_2) * 100, 2);
-fprintf('The diodes cost is improoved by %.2f%% ', savings)
+fprintf('The gateInput cost is improoved by %.2f%% ', savings)

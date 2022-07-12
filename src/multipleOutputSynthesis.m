@@ -65,18 +65,18 @@ function [implicants,v,timedOut] = multipleOutputSynthesis(inputsNumber,outputs,
 
     E = eye(length(uniqueImplicants));
     A = blkdiag(A,E);
+    Phi = zeros(length(uniqueImplicants), length(implicantsSet));
     
-    % choice costraints:
-    %   Z_i > ∑ V_ij * 1/(length(outputs) + 1)
-
-    % TODO this by naming another matrix and then add it to A (also A is not the best name at this point)
+    % choice matrix
     for i = 1:length(uniqueImplicants)
         
         uniqueImplicant = uniqueImplicants(i);
         
-        A(totalMintermLength + i,implicantsSet == uniqueImplicant) = ...
+        Phi(i, implicantsSet == uniqueImplicant) = ...
             -1 / (length(outputs) + 1);
     end
+
+    A(totalMintermLength + 1:end,1:length(implicantsSet)) = Phi;
     
     variablesLength = length(implicantsSet) + length(uniqueImplicants); 
     
@@ -90,7 +90,7 @@ function [implicants,v,timedOut] = multipleOutputSynthesis(inputsNumber,outputs,
     b = zeros(totalMintermLength + length(uniqueImplicants),1);
     b(1:totalMintermLength) = 1;
     
-    % diodes cost
+    % gateInput cost
     if options.GatesInputCost
 
         % 1 every time a port is used in an output
@@ -101,7 +101,7 @@ function [implicants,v,timedOut] = multipleOutputSynthesis(inputsNumber,outputs,
         % c_i every time a port is chosen
         for i = 1:length(uniqueImplicants)
             C(i + length(implicantsSet)) = ...
-                utils.countMatches(uniqueImplicants(i,:),"0" | "1");
+                utils.countMatches(uniqueImplicants(i,:), "0" | "1");
         end
     end
 
@@ -111,9 +111,8 @@ function [implicants,v,timedOut] = multipleOutputSynthesis(inputsNumber,outputs,
 
         fprintf('The choice matrix is (one implicant each column):\n\n')
 
-        % TODO check the minus
         format bank
-        disp(-A(totalMintermLength + 1:end,:).')
+        disp(-Phi.')
         format default
         
         fprintf('The cost vector is:\n\n')
@@ -128,8 +127,6 @@ function [implicants,v,timedOut] = multipleOutputSynthesis(inputsNumber,outputs,
         options.Verbose, ...
         options.Timeout ...
     );
-
-    A
 
     % if it's literal cost add 1 for, everty OR/output
     if ~ options.GatesInputCost
@@ -153,14 +150,15 @@ function [implicants,v,timedOut] = multipleOutputSynthesis(inputsNumber,outputs,
     % cycle through every implicant
     for i = 1:length(implicantsSet)
         
+        if outputImplicantsIndex > outputsImplicantsCount(outputIndex)
+            outputImplicantsIndex = 1;
+            outputIndex = outputIndex + 1;
+        end
+        
         % if the ith implicant is has been chosen add it
         if x(i)
             
             % if the outputImplicantsIndex overflow got to the next output
-            if outputImplicantsIndex > outputsImplicantsCount(outputIndex)
-                outputImplicantsIndex = 1;
-                outputIndex = outputIndex + 1;
-            end
 
             implicants{outputIndex} = ...
                 [implicants{outputIndex} ; implicantsSet(i)];     

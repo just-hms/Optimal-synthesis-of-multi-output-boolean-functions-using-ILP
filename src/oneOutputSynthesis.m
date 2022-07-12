@@ -22,11 +22,6 @@ function [implicants, v, timedOut] = oneOutputSynthesis(minterms, dontCares, opt
     % returns
     %   the minimal cost synthesis
 
-    if options.Verbose
-        fprintf('\nThe inputs number is:\n\n')
-        disp(options.InputsNumber)
-    end
-
     [implicants, A] = getAllImplicants( ...
         options.InputsNumber, ... 
         minterms, ...
@@ -38,7 +33,7 @@ function [implicants, v, timedOut] = oneOutputSynthesis(minterms, dontCares, opt
     C = ones(length(implicants), 1);
     b = ones(length(minterms), 1);
     
-    % diodes cost
+    % gateInput cost
     if options.GatesInputCost
         for i = 1:length(implicants)
             C(i) = utils.countMatches(implicants(i, :), "0" | "1") + 1; 
