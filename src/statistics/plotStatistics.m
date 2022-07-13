@@ -55,7 +55,7 @@ end
 
 hold on
 
-gaps = std_devs;
+gaps = errors;
 
 for i = 1:maxInputsNumber
     
@@ -87,7 +87,7 @@ title(lgd,' Entrate ', 'FontSize', 22)
 xlabel({'Uscite', '',}, 'FontSize', 18);
 ylabel({'Risparmio [%]', ''}, 'FontSize', 18);
 
-title({'Risparmi in base al numero di output', ''}, 'FontSize', 22)
+% title({'Risparmi in base al numero di output', ''}, 'FontSize', 22)
 
-disp(worst_error);
-disp(best_save);
+fprintf('The worst error is %f\n', worst_error);
+fprintf('The best median saving is %f\n', best_save);

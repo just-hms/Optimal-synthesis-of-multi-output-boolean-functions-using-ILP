@@ -26,6 +26,3 @@ h(2).Color = [.2 .2 .2];
 
 ax = gca; 
 ax.FontSize = 18; 
-
-title({'Distribuzione di probabilità con 12 uscite e 6 entrate', ''}, ...
-    'FontSize', 22)
