@@ -8,43 +8,52 @@ Implementato utilizzando MATLAB e `intlinprog`.
 ```
 📦project
 │   📃README.md
-│   📃versari_alessandro.pdf    
 │
 └───📂src
-    │   📜displayImplicants.m
-    │   📜getAllImplicants.m
-    │   📜synthesisCheck.m
-    │   📜oneOutputSynteshis.m
-    │   📜multipleOutputSynthesis.m
-    │   📜utils.m
-    │
-    └───📂examples
-    |       📜check.m
-    |       📜example1.m
-    |       📜example2.m
-    |       📜example3.m
-    |       📜example4.m
-    |       📜verbose.m
-    |
-    └───📂statistics
-    |   |   📜distribution.m
-    |   |   📜statistics.m
-    |   |   📜plotStatistics.m
-    |   |
-    |   |   📜statistics.sh
-    |   |   📜input_statistics.sh
-    |   |
-    |   └───📂out
-    |   
-    └───📂test
-            📜randomTest.m
+|   │   📜displayImplicants.m
+|   │   📜getAllImplicants.m
+|   │   📜synthesisCheck.m
+|   │   📜oneOutputSynteshis.m
+|   │   📜multipleOutputSynthesis.m
+|   │   📜utils.m
+|   │
+|   └───📂examples
+|   |       📜check.m
+|   |       📜example1.m
+|   |       📜example2.m
+|   |       📜example3.m
+|   |       📜example4.m
+|   |       📜verbose.m
+|   |
+|   └───📂statistics
+|       |   📜distribution.m
+|       |   📜statistics.m
+|       |   📜plotStatistics.m
+|       |
+|       |   📜statistics.sh
+|       |   📜input_statistics.sh
+|       |
+|       └───📂out
+|
+└───📂test
+|       📜randomTest.m
+|
+└───📂docs
+        📃versari_alessandro.pdf    
+        📃PresentazioneTesiVersari.pdf    
+        📃PresentazioneTesiVersari.pptx    
+
 ```
 
-## Usage
+## usage
 
 Per capire come utilizzare le funzioni fornite all'interno di src controllare gli esempi.
 
 Tra gli esempi ne è presente uno chiamato `check.m` che illustra come usare la funzione `synthesisCheck`.
+
+# docs
+
+cartella contenenente la documentazione per questo progetto
 
 # 📂src
 
@@ -69,6 +78,6 @@ index oneOutputCost multipleOutputCost timeOfExecution
 4 58 54 0.116115
 ```
 
-## 📂test
+# test
 
 cartella contenente uno script che permette di effettuare `n` test su un qualsiasi numero di uscite o di entrate.
