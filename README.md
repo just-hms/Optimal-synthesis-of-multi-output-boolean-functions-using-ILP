@@ -7,41 +7,41 @@ Implementato utilizzando MATLAB e `intlinprog`.
 ## struttura
 ```
 📦project
-│   📃README.md
+│	📃README.md
 │
+└───📂docs
+|		📃versari_alessandro.pdf
+|		📃PresentazioneTesiVersari.pdf
+|		📃PresentazioneTesiVersari.pptx
+|
 └───📂src
-|   │   📜displayImplicants.m
-|   │   📜getAllImplicants.m
-|   │   📜synthesisCheck.m
-|   │   📜oneOutputSynteshis.m
-|   │   📜multipleOutputSynthesis.m
-|   │   📜utils.m
-|   │
-|   └───📂examples
-|   |       📜check.m
-|   |       📜example1.m
-|   |       📜example2.m
-|   |       📜example3.m
-|   |       📜example4.m
-|   |       📜verbose.m
-|   |
-|   └───📂statistics
-|       |   📜distribution.m
-|       |   📜statistics.m
-|       |   📜plotStatistics.m
-|       |
-|       |   📜statistics.sh
-|       |   📜input_statistics.sh
-|       |
-|       └───📂out
+|	│	📜displayImplicants.m
+|	│	📜getAllImplicants.m
+|	│	📜synthesisCheck.m
+|	│	📜oneOutputSynteshis.m
+|	│	📜multipleOutputSynthesis.m
+|	│	📜utils.m
+|	│
+|	└───📂examples
+|	|		📜check.m
+|	|		📜example1.m
+|	|		📜example2.m
+|	|		📜example3.m
+|	|		📜example4.m
+|	|		📜verbose.m
+|	|
+|	└───📂statistics
+|		|   📜distribution.m
+|		|   📜statistics.m
+|		|   📜plotStatistics.m
+|		|
+|		|   📜statistics.sh
+|		|   📜input_statistics.sh
+|		|
+|		└───📂out
 |
 └───📂test
-|       📜randomTest.m
-|
-└───📂docs
-        📃versari_alessandro.pdf    
-        📃PresentazioneTesiVersari.pdf    
-        📃PresentazioneTesiVersari.pptx    
+		📜randomTest.m
 
 ```
 
