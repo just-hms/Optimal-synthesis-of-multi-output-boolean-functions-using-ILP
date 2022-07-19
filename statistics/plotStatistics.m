@@ -15,9 +15,9 @@ QUANTILE = 1.96;
 for o = 1:maxOutputsNumber
     for i = 1:maxInputsNumber
         
-        filename = sprintf('out_web/%d-%d.log', o, i);
+        filename = sprintf('out_web/%d-%d.txt', o, i);
         A = importdata(filename,delimiterIn);
-        filename = sprintf('out_dump/%d-%d.log', o, i);
+        filename = sprintf('out_dump/%d-%d.txt', o, i);
         B = importdata(filename,delimiterIn);
 
         if isempty(A) && isempty(B) ; continue ; end

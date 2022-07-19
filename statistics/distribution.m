@@ -5,10 +5,10 @@ delimiterIn = ' ';
 if exist('outputsNumber','var') ~= 1 ; outputsNumber = 8 ; end
 if exist('inputsNumber','var') ~= 1 ; inputsNumber = 4 ; end
         
-filename = sprintf('out_web/%d-%d.log', outputsNumber, inputsNumber);
+filename = sprintf('out_web/%d-%d.txt', outputsNumber, inputsNumber);
 A = importdata(filename,delimiterIn);
 
-filename = sprintf('out_dump/%d-%d.log', outputsNumber, inputsNumber);
+filename = sprintf('out_dump/%d-%d.txt', outputsNumber, inputsNumber);
 B = importdata(filename,delimiterIn);
 
 if isempty(A) && isempty(B) ; return ; end

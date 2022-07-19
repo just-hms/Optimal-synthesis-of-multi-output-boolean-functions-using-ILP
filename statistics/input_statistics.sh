@@ -2,7 +2,7 @@ o=$1
 
 for i in {1..16} ; do 
         
-    filename="out/$o-$i.log"
+    filename="out/$o-$i.txt"
     
     if ! [ -f "$filename" ] \
     || ! [ -s "$filename" ] ; then

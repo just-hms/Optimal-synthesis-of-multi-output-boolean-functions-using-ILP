@@ -1,4 +1,4 @@
-addpath(genpath('./../'))
+addpath(genpath('./../src/'))
 
 diary verbose.out
 

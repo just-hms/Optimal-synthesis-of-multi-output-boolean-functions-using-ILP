@@ -1,4 +1,4 @@
-addpath(genpath("./../"))
+addpath(genpath('./../src/'))
 
 y_1 = {[0,1,3] + 1, []};
 y_2 = {[3,6] + 1, []};

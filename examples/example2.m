@@ -1,7 +1,7 @@
-addpath(genpath("./../"))
+addpath(genpath('./../src/'))
 
-y_1 = {[2,3,7,12,15] + 1, [4,5,13] + 1};
-y_2 = {[4,7,9,11,15] + 1, [6,12,14] + 1};
+y_1 = {[1,5,6,7,9,13,14] + 1, []};
+y_2 = {[0,1,6,7,8,9] + 1, []};
 
 [implicants_1, v_1] = oneOutputSynthesis(y_1{1}, y_1{2}, InputsNumber = 4);
 [implicants_2, v_2] = oneOutputSynthesis(y_2{1}, y_2{2}, InputsNumber = 4);

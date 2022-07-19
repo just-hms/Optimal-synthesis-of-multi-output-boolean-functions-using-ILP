@@ -1,4 +1,4 @@
-addpath(genpath("./../"))
+addpath(genpath('./../src/'))
 
 y_1 = {[1,2,3,5] + 1, []};
 y_2 = {[1,5,6,7] + 1, []};
@@ -7,12 +7,12 @@ y_2 = {[1,5,6,7] + 1, []};
 [implicants_2, v_2] = oneOutputSynthesis(y_2{1}, y_2{2}, InputsNumber = 3);
 
 if ~ synteshisCheck(implicants_1, y_1{1}, y_1{2})
-    disp("ERROR: in the first output synthesis")
+    disp('ERROR: in the first output synthesis')
     return
 end
 
 if ~ synteshisCheck(implicants_2, y_2{1}, y_2{2})
-    disp("ERROR: in the second output synthesis")
+    disp('ERROR: in the second output synthesis')
     return
 end
 
@@ -26,7 +26,7 @@ y = {y_1, y_2};
 for j =1:length(implicants)
     y_j = y{j};
     if ~ synteshisCheck(implicants{j}, y_j{1}, y_j{2})
-        disp("ERROR: multiple output synthesis")
+        disp('ERROR: multiple output synthesis')
         return
     end
 end
