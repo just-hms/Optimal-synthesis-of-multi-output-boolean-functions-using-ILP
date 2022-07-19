@@ -31,12 +31,12 @@ Implementato utilizzando MATLAB e `intlinprog`.
 |	|		📜verbose.m
 |	|
 |	└───📂statistics
-|		|   📜distribution.m
-|		|   📜statistics.m
-|		|   📜plotStatistics.m
+|		|	📜distribution.m
+|		|	📜statistics.m
+|		|	📜plotStatistics.m
 |		|
-|		|   📜statistics.sh
-|		|   📜input_statistics.sh
+|		|	📜statistics.sh
+|		|		📜input_statistics.sh
 |		|
 |		└───📂out
 |
