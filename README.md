@@ -1,15 +1,16 @@
-Studio che utilizza l'algoritmo di Quine-McCluskey per enumerare gli implicanti di una rete combinatoria multi uscita e la PLI (Branch & Bound) per trovare la sintesi ottima di essa.
+Bachelor degree thesis that succeeds in finding the optimal solution to the problem of synthesize a given multi-output boolean function.
 
-Implementato utilizzando MATLAB e `intlinprog`.
+It uses the Quine-McCluskey algorithm to enumerate the implicants of the function and find its optimal synthesis using Branch & Bound (PLI).
 
-La teoria dietro al codice è illustrata all'interno della cartella `📂docs`.
+Implemented using MATLAB and `intlinprog`.
 
+All theory behind the code is explained inside the `📂docs` folder, in italian.
 
 # Usage
 
-Per capire come utilizzare le funzioni fornite all'interno di 📂src controllare gli esempi.
+There are some examples which illustrate how to use all the functions provided by this repo. 
 
-Tra gli esempi ne è presente uno chiamato `check.m` che illustra come usare la funzione `synthesisCheck`.
+`check.m` shows how to use the function `synthesisCheck` to check wheter or not a synthesis of a boolean function is correct.
 
 # File structure
 
@@ -39,14 +40,14 @@ Tra gli esempi ne è presente uno chiamato `check.m` che illustra come usare la 
 |		📜utils.m
 |
 └───📂statistics
-	|	📜distribution.m
-	|	📜statistics.m
-	|	📜plotStatistics.m
-	|
-	|	📜statistics.sh
-	|	📜input_statistics.sh
-	|
-	└───📂out
+|	|	📜distribution.m
+|	|	📜statistics.m
+|	|	📜plotStatistics.m
+|	|
+|	|	📜statistics.sh
+|	|	📜input_statistics.sh
+|	|
+|	└───📂out
 |
 └───📂test
 		📜randomTest.m
@@ -56,28 +57,32 @@ Tra gli esempi ne è presente uno chiamato `check.m` che illustra come usare la 
 
 ## 📂docs
 
-Cartella contenenente la documentazione per questo progetto
+Folder containing the documentation of this project.
 
 ## 📂examples
 
-All'interno di questa cartella si possono trovare gli esempi esplicativi trattati nella tesi, più un sempio che illustra come utilizzare `synthesisCheck`.
+Inside this folder you can find examples that have been described inside the study and some other examples to better understand some functionality provided by this repo.
 
 ## 📂src
 
-Cartella che contiene tutte le funzioni utilizzate per eseguire la sintesi.
-
+Folder that contains the source code.
 
 ## 📂statistics
 
-All'interno di questa cartella ci sono le funzioni usate per generare i test e plottare i grafici e una cartella `📂out` .
+Inside this folder there are all the functions used to generate the tests' input and to plot their result.
 
-I due script .sh invocano lo script statistics.m passandogli come parametro:
-- il numero di entrate
-- il numero di uscite
-- il numero dell'ultimo test eseguito
+The `.sh` scrips invoke `statistics.m` passing the folling values as a parameter:
+- number of inputs
+- number of outputs
+- number of the last executed test
 
 #### 📂out 
-In questa cartella sono contenuti tutti i file dei test nel formato `inputs-outputs.txt` contenenti i risultati dei test nel formato:
+
+In this folder there are all the result obtained from the tests.
+
+File name format : `inputs-outputs.txt`
+
+File content format :  
 
 ```
 index oneOutputCost multipleOutputCost timeOfExecution
@@ -89,4 +94,4 @@ index oneOutputCost multipleOutputCost timeOfExecution
 
 ## 📂test
 
-cartella contenente uno script che permette di effettuare `n` test su un qualsiasi numero di uscite o di entrate.
+Folder containing test scripts which use the `synthesisCheck` function to check if the synthesis are done correctly.
