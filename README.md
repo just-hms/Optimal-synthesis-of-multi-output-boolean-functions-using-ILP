@@ -1,4 +1,4 @@
-Bachelor degree thesis that succeeds in finding the optimal solution to the problem of synthesize a given multi-output boolean function.
+Bachelor degree thesis that succeeds in finding the optimal solution to the problem of the synthesize of a given multi-output boolean function.
 
 It uses the Quine-McCluskey algorithm to enumerate the implicants of the function and find its optimal synthesis using Branch & Bound (PLI).
 
